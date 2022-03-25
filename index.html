@@ -11,30 +11,50 @@
     <a-scene id="scene" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <a-assets>
             <img id="bg">
-            <video id="nft" muted="muted" autoplay="true" loop="true" preload="auto"></video>
+            <video id="main" muted="muted" autoplay="true" loop="true" preload="auto"></video>
+            <video id="down" muted="muted" autoplay="true" preload="auto" loop="true"></video>
+            <video id="right" muted="muted" autoplay="true" preload="auto" loop="true"></video>
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
         <a-entity id="entity" mindar-image-target="targetIndex: 0">
-            <a-plane src="#bg" height="1.26" width="1.01" position="0 0 0"></a-plane>
-            <a-video src="#nft" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
+            <a-image src="#bg" height="1.28" width="1.03" position="0 0 0"></a-image>
+            <a-video src="#main" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
+            <a-video src="#down" position="0.028 -0.67 0.001" width="1.085" height="0.05" repeat></a-video>
+            <a-video src="#right" position="0.545 0 0.001" width="1.28" height="0.05" rotation="0 0 90" repeat></a-video>
+            <a-entity text="value: KANGCAR NFT; anchor:left; color:black; width: 3;" position="-0.53 0.7 0.001"></a-entity>
         </a-entity>
     </a-scene>
 
-    <script>
+    <script id="script">
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const asset = urlParams.get('asset')
         document.getElementById('bg').src = `./data/${asset}.jpg`;
-        document.getElementById('nft').src = `https://openseauserdata.com/files/${asset}.mp4`;
+        document.getElementById('main').src = `https://openseauserdata.com/files/${asset}.mp4`;
+        document.getElementById('down').src = `./data/${asset}_down.mp4`;
+        document.getElementById('right').src = `./data/${asset}_right.mp4`;
         document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
 
         window.scrollTo(0, 1);
 
-        const video = document.querySelector('#nft');
-        video.addEventListener('canplay', (event) => {
-            video.play();
+        const main_video = document.querySelector('#main');
+        main_video.addEventListener('canplay', (event) => {
+            main_video.play();
         });
+
+        const down_video = document.querySelector('#down');
+        down_video.addEventListener('canplay', (event) => {
+            down_video.play();
+        });
+
+        const right_video = document.querySelector('#right');
+        right_video.addEventListener('canplay', (event) => {
+            right_video.play();
+        });
+
+        var elem = document.getElementById("script");
+        elem.parentNode.removeChild(elem);
     </script>
 </body>
 
