@@ -29,21 +29,10 @@
     <script id="script">
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const domain = urlParams.get('domain')
         const asset = urlParams.get('asset')
 
-        var video_src;
-        switch (domain) {
-            case "opensea":
-                video_src = `https://openseauserdata.com/files/${asset}.mp4`;
-                break;
-            case "makersplace":
-                video_src = `https://mkpcdn.com/videos/${asset}.mp4`;
-                break;
-        }
-
         document.getElementById('bg').src = `./data/${asset}.jpg`;
-        document.getElementById('main').src = video_src;
+        document.getElementById('main').src = `https://video.wixstatic.com/video/${asset}/1080p/mp4/file.mp4`;
         document.getElementById('down').src = `./data/${asset}_down.jpg`;
         document.getElementById('right').src = `./data/${asset}_right.jpg`;
         document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
