@@ -18,24 +18,46 @@
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
         <a-entity id="entity" mindar-image-target="targetIndex: 0">
-            <a-image src="#bg" height="1.28" width="1.03" position="0 0 0"></a-image>
-            <a-video src="#main" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
-            <a-image src="#down" position="0.028 -0.68 0.001" width="1.085" height="0.05"></a-image>
-            <a-image src="#right" position="0.545 0 0.001" width="1.28" height="0.05" rotation="0 0 90"></a-image>
-            <a-entity text="value: KANGCAR NFT; anchor:left; color:black; width: 3;" position="-0.53 0.7 0.001"></a-entity>
+            <a-image id="entity_bg" src="#bg" height="1.28" width="1.03" position="0 0 0"></a-image>
+            <a-video id="entity_main" src="#main" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
+            <a-image id="entity_down" src="#down" position="0.028 -0.68 0.001" width="1.085" height="0.05"></a-image>
+            <a-image id="entity_right" src="#right" position="0.545 0 0.001" width="1.28" height="0.05" rotation="0 0 90"></a-image>
+            <a-entity id="entity_text" text="value: KANGCAR NFT; anchor:left; color:black; width: 3;" position="-0.53 0.7 0.001"></a-entity>
         </a-entity>
     </a-scene>
 
     <script id="script">
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const asset = urlParams.get('asset')
+        const asset = urlParams.get('asset');
+        var mode = urlParams.get('mode');
 
-        document.getElementById('bg').src = `./data/${asset}.jpg`;
-        document.getElementById('main').src = `https://video.wixstatic.com/video/${asset}/1080p/mp4/file.mp4`;
-        document.getElementById('down').src = `./data/${asset}_down.jpg`;
-        document.getElementById('right').src = `./data/${asset}_right.jpg`;
-        document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
+        if (!mode || mode.length === 0) {
+            mode = "exhibition";
+        }
+
+        switch (mode) {
+            case "card":
+                var videoEntity = document.getElementById('entity_main');
+                videoEntity.setAttribute("position", "0 0 0.001");
+                videoEntity.setAttribute("width", "1");
+                videoEntity.setAttribute("height", "1");
+
+                document.getElementById('entity_text').remove();
+                document.getElementById('entity_bg').remove();
+                document.getElementById('entity_down').remove();
+                document.getElementById('entity_right').remove();
+                document.getElementById('main').src = `https://video.wixstatic.com/video/${asset}/1080p/mp4/file.mp4`;
+                document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
+                break;
+            case "exhibition":
+                document.getElementById('bg').src = `./data/${asset}.jpg`;
+                document.getElementById('main').src = `https://video.wixstatic.com/video/${asset}/1080p/mp4/file.mp4`;
+                document.getElementById('down').src = `./data/${asset}_down.jpg`;
+                document.getElementById('right').src = `./data/${asset}_right.jpg`;
+                document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
+                break;
+        }
 
         window.scrollTo(0, 1);
 
