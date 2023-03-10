@@ -5,6 +5,7 @@
     <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.1/dist/howler.min.js"></script>
 </head>
 
 <body>
@@ -12,12 +13,11 @@
         <a-assets>
             <img id="bg">
             <video id="main" muted="muted" loop="true" preload="auto"></video>
-            <audio id="sound" loop="true" preload="auto"></audio>
             <img id="down"></img>
             <img id="right"></img>
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera id="rig" position="0 0 0" look-controls="enabled: false"></a-camera>
         <a-entity id="entity_target" mindar-image-target="targetIndex: 0">
             <a-image id="entity_bg" src="#bg" height="1.28" width="1.03" position="0 0 0"></a-image>
             <a-video id="entity_main" src="#main" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
@@ -49,13 +49,11 @@
                 document.getElementById('entity_down').remove();
                 document.getElementById('entity_right').remove();
                 document.getElementById('main').src = `https://video.wixstatic.com/video/${asset}/1080p/mp4/file.mp4`;
-                document.getElementById('sound').src = document.getElementById('main').src;
                 document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
                 break;
             case "exhibition":
                 document.getElementById('bg').src = `./data/${asset}.jpg`;
                 document.getElementById('main').src = `https://video.wixstatic.com/video/${asset}/1080p/mp4/file.mp4`;
-                document.getElementById('sound').src = document.getElementById('main').src;
                 document.getElementById('down').src = `./data/${asset}_down.jpg`;
                 document.getElementById('right').src = `./data/${asset}_right.jpg`;
                 document.getElementById('scene').setAttribute("mindar-image", `filterMinCF:0.001; imageTargetSrc: ./data/${asset}.mind;`);
@@ -66,19 +64,26 @@
 
         const target = document.querySelector('#entity_target');
         const main_video = document.querySelector('#main');
-        const main_sound = document.querySelector('#sound');
+        const entity_video = document.querySelector('#entity_main');
+        entity_video.sound = new Howl({
+            src: [main_video.src],
+            loop: main_video.loop,
+            volume: 1
+        });
+        this.saveSeek = 0;
+
         target.addEventListener("targetFound", event => {
-            console.log("target found");
+            if (entity_video.sound.playing()) return;
             main_video.play();
-            main_sound.play();
+            entity_video.audioId = entity_video.sound.play();
+            entity_video.sound.seek(entity_video.saveSeek, entity_video.audioId);
         });
 
         target.addEventListener("targetLost", event => {
-            console.log("target found");
+            if (!entity_video.sound.playing()) return;
             main_video.pause();
-            main_sound.pause();
-            // main_video.currentTime = 0
-            // main_sound.currentTime = 0
+            entity_video.sound.pause();
+            entity_video.saveSeek = entity_video.sound.seek(entity_video.audioId);
         });
 
         var elem = document.getElementById("script");
