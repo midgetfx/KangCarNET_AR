@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.1/dist/howler.min.js"></script>
+</head>
+
+<body>
+    <a-scene id="scene" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" mindar-image="filterMinCF:0.001; imageTargetSrc: ./data/a3fccb_4dfa25a61d8d4f0caff5418cfebeea31.mind">
+        <a-assets>
+            <video id="main_0" src="https://video.wixstatic.com/video/a3fccb_4dfa25a61d8d4f0caff5418cfebeea31/1080p/mp4/file.mp4" muted="muted" loop="true" preload="auto"></video>
+            <video id="main_1" src="https://video.wixstatic.com/video/a3fccb_1782c9b9c52c460bad4a97657451df7f/1080p/mp4/file.mp4" muted="muted" loop="true" preload="auto"></video>
+            <video id="main_2" src="https://video.wixstatic.com/video/a3fccb_ed91b4095083440b957b96778c0d49d4/1080p/mp4/file.mp4" muted="muted" loop="true" preload="auto"></video>
+        </a-assets>
+
+        <a-camera id="rig" position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-entity id="entity_0" mindar-image-target="targetIndex: 0">
+            <a-video id="entity_main" src="#main_0" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
+        </a-entity>
+        <a-entity id="entity_1" mindar-image-target="targetIndex: 1">
+            <a-video id="entity_main" src="#main_1" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
+        </a-entity>
+        <a-entity id="entity_2" mindar-image-target="targetIndex: 2">
+            <a-video id="entity_main" src="#main_2" position="0 0.13 0.001" width="0.9" height="0.9" repeat></a-video>
+        </a-entity>
+    </a-scene>
+
+    <script id="script">
+        const queryString = window.location.search;
+        window.scrollTo(0, 1);
+
+        function stop(id) {
+            var main_video = videos[id];
+            if (!main_video.sound.playing()) return;
+            main_video.pause();
+            main_video.sound.pause();
+            main_video.saveSeek = main_video.sound.seek(main_video.audioId);
+        }
+
+        function play(id) {
+            var main_video = videos[id];
+            if (main_video.sound.playing()) return;
+
+            for (var i = 0; i < 3; i++) stop(i);
+
+            main_video.play();
+            main_video.audioId = main_video.sound.play();
+            main_video.sound.seek(main_video.saveSeek, main_video.audioId);
+        }
+
+        var videos = [];
+        for (var i = 0; i < 3; i++) {
+            const main_video = document.querySelector(`#main_${i}`);
+            main_video.sound = new Howl({
+                src: [main_video.src],
+                loop: main_video.loop,
+                volume: 1
+            });
+            main_video.saveSeek = 0;
+            videos.push(main_video);
+
+            const target = document.querySelector(`#entity_${i}`);
+            target.addEventListener("targetFound", event => {
+                play(parseInt(event.target.id.split('_')[1]));
+            });
+
+            target.addEventListener("targetLost", event => {
+                stop(parseInt(event.target.id.split('_')[1]));
+            });
+        }
+
+        var elem = document.getElementById("script");
+        elem.parentNode.removeChild(elem);
+    </script>
+</body>
+
+</html>
